@@ -1,0 +1,61 @@
+function generateLocations(startRange, endRange) {
+  const locations = [];
+
+  const startLetters = startRange.substring(0, 2);
+  const endLetters = endRange.substring(0, 2);
+  const startNumbers = parseInt(startRange.substring(3, 5));
+  const endNumbers = parseInt(endRange.substring(3, 5));
+  const startSection = startRange.substring(6, 7);
+  const endSection = endRange.substring(6, 7);
+  const startSubNumbers = parseInt(startRange.substring(8, 10));
+  const endSubNumbers = parseInt(endRange.substring(8, 10));
+
+  for (let i = startLetters.charCodeAt(0); i <= endLetters.charCodeAt(0); i++) {
+    for (let j = startLetters.charCodeAt(1); j <= endLetters.charCodeAt(1); j++) {
+      const letter1 = String.fromCharCode(i);
+      const letter2 = String.fromCharCode(j);
+
+      for (let k = startNumbers; k <= endNumbers; k++) {
+        const numbers = k.toString().padStart(2, '0');
+
+        for (let l = startSection.charCodeAt(0); l <= endSection.charCodeAt(0); l++) {
+          const section = String.fromCharCode(l);
+
+          for (let m = startSubNumbers; m <= endSubNumbers; m++) {
+            const subNumbers = m.toString().padStart(2, '0');
+            const location = `${letter1}${letter2}-${numbers}-${section}-${subNumbers}`;
+            locations.push(location);
+          }
+        }
+      }
+    }
+  }
+
+  return locations;
+}
+
+function exportCSV(locations) {
+  let csvContent = 'Location\n';
+  locations.forEach((location) => {
+    csvContent += `${location}\n`;
+  });
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'warehouse_locations.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
+
+// Example usage:
+const startRange = 'CC-01-A-01';
+const endRange = 'CC-48-H-02';
+
+const generatedLocations = generateLocations(startRange, endRange);
+exportCSV(generatedLocations);
